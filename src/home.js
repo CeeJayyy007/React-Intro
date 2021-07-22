@@ -1,30 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Bloglist from "./Bloglist";
 
 
 const Home = () => {
 
-    const [blogs, setBlogs] = useState(
-        [{title: "My new website", body: "Body of the new blog", author: "Jack Sparrow", id: 1},
-        {title: "My new blog news", body: "Body of the new blog", author: "Jack Bauer", id: 2},
-        {title: "My new FAQ", body: "Body of the new blog", author: "Jack Black", id: 3},   
-    ]);
-    const handleClick = () => {
-        
-    }
+    const [blogs, setBlogs] = useState(null);
+    const [isPending, setIsPending] = useState(true);
+
+    useEffect(() => {
+        fetch('http://localhost:8000/blogs')
+        .then(res => {
+            return res.json();
+        })
+        .then(data => {
+            console.log(data);
+            setBlogs(data);
+            setIsPending(false);
+        });
+
+    }, []);
+
     return ( 
         <div className="home">
-            <h2>Homepage</h2>
-            {blogs.map((blog) =>(
-                <div className="blog-preview" key={blog.id}>
-                    <h2>{ blog.title }</h2>
-                    <p>Written by: { blog.author }</p>
-                </div>
-
-            ))}
+            { isPending && <div>Loading...</div> }
+            {blogs && <Bloglist blogs={blogs} title = "All Blogs!" />}
             
-            
-            
-            <button onClick={handleClick}>Click me</button>
         </div>
      );
 }
